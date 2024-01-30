@@ -1,0 +1,39 @@
+{
+  "name": "siero-worker",
+  "repository": "github:fabiospampinato/siero-worker",
+  "description": "A managed worker that can be interacted with via Siero.",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "tsex clean",
+    "compile": "tsex compile",
+    "compile:watch": "tsex compile --watch",
+    "test": "tsex test",
+    "test:watch": "tsex test --watch",
+    "prepublishOnly": "tsex prepare"
+  },
+  "keywords": [
+    "siero",
+    "worker",
+    "plugin",
+    "environment",
+    "serialization",
+    "deserialization",
+    "rpc",
+    "sandbox"
+  ],
+  "dependencies": {
+    "siero": "^0.1.1",
+    "webworker-shim": "^1.1.0",
+    "zeptoid": "^1.0.1"
+  },
+  "devDependencies": {
+    "fava": "^0.3.2",
+    "promise-resolve-timeout": "^2.0.0",
+    "tsex": "^3.0.2",
+    "typescript": "^5.3.3"
+  }
+}
