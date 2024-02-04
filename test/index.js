@@ -11,7 +11,7 @@ describe ( 'Siero Worker', it => {
 
   it ( 'can pass values back and forth between realms', async t => {
 
-    t.plan ( 8 );
+    t.plan ( 10 );
 
     const worker = new SieroWorker ();
 
@@ -35,6 +35,8 @@ describe ( 'Siero Worker', it => {
       await API.is ( result3, 5 );
       const result4 = await API.sumWith.bind ( null, 4, 9, Math.sqrt )();
       await API.is ( result4, 5 );
+      await API.is ( API.sumWith.name, 'sumWith' );
+      await API.is ( API.sumWith.length, 3 );
     };
 
     worker.global ( 'API', API );

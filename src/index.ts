@@ -1,9 +1,10 @@
 
 /* IMPORT */
 
-import {__module, __internals, serialize, deserialize} from 'siero';
+import {__module, realm, call, register, serialize, deserialize} from 'siero';
 import WebWorker from 'webworker-shim';
 import zeptoid from 'zeptoid';
+import {castArray} from './utils';
 import type {Disposer, Options} from './types';
 
 /* MAIN */
@@ -22,7 +23,7 @@ class Worker {
   constructor ( options?: Options ) {
 
     this.innerRealm = zeptoid ();
-    this.outerRealm = __internals.realm;
+    this.outerRealm = realm;
 
     this.webworker = new WebWorker ( `data:text/javascript;charset=utf-8,${encodeURIComponent ( `
       addEventListener ( 'message', (() => {
@@ -51,11 +52,11 @@ class Worker {
 
     this.webworker.addEventListener ( 'message', ({ data }) => {
       if ( data.type === 'siero.command' ) {
-        __internals.call ( data.command, deserialize ( data.args, { realm: this.innerRealm } ) );
+        call ( data.command, castArray ( deserialize ( data.args, { realm: this.innerRealm } ) ) );
       }
     });
 
-    this.dispose = __internals.register ( this.innerRealm, ( command: string, args: string ) => {
+    this.dispose = register ( this.innerRealm, ( command: string, args: string ) => {
       this.webworker.postMessage ({ type: 'siero.command', command, args });
     });
 
