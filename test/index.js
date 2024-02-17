@@ -11,7 +11,7 @@ describe ( 'Siero Worker', it => {
 
   it ( 'can pass values back and forth between realms', async t => {
 
-    t.plan ( 11 );
+    t.plan ( 15 );
 
     Error.stackTraceLimit = 0;
 
@@ -24,6 +24,18 @@ describe ( 'Siero Worker', it => {
       is: ( a, b ) => {
         t.is ( a, b );
       },
+      resolveUnserializable: () => {
+        return new class Unserializable {};
+      },
+      rejectUnserializable: () => {
+        throw new class Unserializable {};
+      },
+      promiseResolveUnserializable: () => {
+        return Promise.resolve ( new class Unserializable {} );
+      },
+      promiseRejectUnserializable: () => {
+        return Promise.reject ( new class Unserializable {} );
+      },
       async sumWith ( a, b, transformer ) {
         const result = await transformer ( a ) + await transformer ( b );
         t.is ( result, 5 );
@@ -34,7 +46,6 @@ describe ( 'Siero Worker', it => {
     const plugin = async () => {
       /* HELPERS */
       Error.stackTraceLimit = 0;
-      class Unserializable {}
       /* FUNCTION METADATA */
       await API.is ( API.sumWith.name, 'sumWith' );
       await API.is ( API.sumWith.length, 3 );
@@ -49,7 +60,31 @@ describe ( 'Siero Worker', it => {
       await API.is ( result4, 5 );
       /* FUNCTION CALL - ERROR - CALL */
       try {
-        API.is ( new Unserializable (), new Unserializable () );
+        API.is ( new class Unserializable {}, new class Unserializable {} );
+      } catch ( error ) {
+        await API.deepEqual ( error, new Error ( 'Unserializable value' ) );
+      }
+      /* FUNCTION CALL - ERROR - RESOLVE */
+      try {
+        await API.resolveUnserializable ();
+      } catch ( error ) {
+        await API.deepEqual ( error, new Error ( 'Unserializable value' ) );
+      }
+      /* FUNCTION CALL - ERROR - REJECT */
+      try {
+        await API.rejectUnserializable ();
+      } catch ( error ) {
+        await API.deepEqual ( error, new Error ( 'Unserializable value' ) );
+      }
+      /* PROMISE - ERROR - RESOLVE */
+      try {
+        await API.promiseResolveUnserializable ();
+      } catch ( error ) {
+        await API.deepEqual ( error, new Error ( 'Unserializable value' ) );
+      }
+      /* PROMISE - ERROR - REJECT */
+      try {
+        await API.promiseRejectUnserializable ();
       } catch ( error ) {
         await API.deepEqual ( error, new Error ( 'Unserializable value' ) );
       }
