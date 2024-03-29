@@ -11,7 +11,7 @@ describe ( 'Siero Worker', it => {
 
   it ( 'can pass values back and forth between realms', async t => {
 
-    t.plan ( 15 );
+    t.plan ( 17 );
 
     Error.stackTraceLimit = 0;
 
@@ -35,6 +35,9 @@ describe ( 'Siero Worker', it => {
       },
       promiseRejectUnserializable: () => {
         return Promise.reject ( new class Unserializable {} );
+      },
+      async getSymbolFor ( key ) {
+        return Symbol.for ( key );
       },
       async sumWith ( a, b, transformer ) {
         const result = await transformer ( a ) + await transformer ( b );
@@ -88,6 +91,12 @@ describe ( 'Siero Worker', it => {
       } catch ( error ) {
         await API.deepEqual ( error, new Error ( 'Unserializable value' ) );
       }
+      /* SYMBOL.FOR */
+      const key = 'asyncIterator'; // Tricky name to make it harder
+      const symbol1 = await API.getSymbolFor ( key );
+      const symbol2 = Symbol.for ( key );
+      await API.is ( symbol1 === symbol2, true );
+      await API.is ( symbol1, symbol2 );
     };
 
     worker.global ( 'API', API );
