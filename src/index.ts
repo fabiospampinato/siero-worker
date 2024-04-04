@@ -88,3 +88,4 @@ class Worker {
 /* EXPORT */
 
 export default Worker;
+export type {Options};
