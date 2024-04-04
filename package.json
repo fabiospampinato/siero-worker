@@ -2,7 +2,7 @@
   "name": "siero-worker",
   "repository": "github:fabiospampinato/siero-worker",
   "description": "A managed worker that can be interacted with via Siero.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "main": "dist/index.js",
   "exports": "./dist/index.js",
